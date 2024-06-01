@@ -70,7 +70,7 @@ module "records" {
 
   records = [
     {
-      name    = "db"
+      name    = "db-${var.environment}"
       type    = "CNAME"
       ttl     = 1
       records = [

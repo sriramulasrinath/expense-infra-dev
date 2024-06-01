@@ -7,9 +7,9 @@ variable "environment" {
 variable "common_tags" {
   default = {
     Project = "expense"
-    Environment = "dev"
+    environment = "dev"
     Terraform = "true"
-    component = "app-alb"
+    component = "backend"
   }
 }
 variable "zone_name" {

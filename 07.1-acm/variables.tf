@@ -9,9 +9,12 @@ variable "common_tags" {
     Project = "expense"
     Environment = "dev"
     Terraform = "true"
-    component = "app-alb"
+    component = "backend"
   }
 }
 variable "zone_name" {
   default = "srinath.online"
+}
+variable "zone_id" {
+  default = "Z097760412NZYP4P1P7PG"
 }

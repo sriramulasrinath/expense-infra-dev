@@ -45,6 +45,15 @@ module "app_alb" {
   common_tags = var.common_tags 
   sg_name = "app_alb"
 }
+module "web_alb" {
+  source = "../../Terraform-SG-module"
+  project_name = var.project_name
+  environment = var.environment
+  sg_description = "SG for web_alb Instances"
+  vpc_id = data.aws_ssm_parameter.vpc_id.value
+  common_tags = var.common_tags 
+  sg_name = "web_alb"
+}
 module "vpn" {
   source = "../../Terraform-SG-module"
   project_name = var.project_name
@@ -88,15 +97,6 @@ resource "aws_security_group_rule" "db-vpn" {
 ###############################################################
 ###       BACKEND
 #################################################################
-#backend is accepting connections from frontend
-resource "aws_security_group_rule" "backend_frontend" {
-  type              = "ingress"
-  from_port         = 8080
-  to_port           = 8080
-  protocol          = "tcp"
-  source_security_group_id = module.frontend.sg_id #where you are getting traffic from
-  security_group_id = module.backend.sg_id
-}
 ### backend is accepting connections from bastion
 resource "aws_security_group_rule" "backend_bastion" {
   type              = "ingress"
@@ -143,7 +143,15 @@ resource "aws_security_group_rule" "app_alb_vpn" {
   to_port           = 80
   protocol          = "tcp"
   source_security_group_id = module.vpn.sg_id #where you are getting traffic from
-  security_group_id = module.app_alb .sg_id
+  security_group_id = module.app_alb.sg_id
+}
+resource "aws_security_group_rule" "app_alb_frontend" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.frontend.sg_id #where you are getting traffic from
+  security_group_id = module.app_alb.sg_id
 }
 resource "aws_security_group_rule" "app_alb_bastion" {
   type              = "ingress"
@@ -154,12 +162,31 @@ resource "aws_security_group_rule" "app_alb_bastion" {
   security_group_id = module.app_alb.sg_id
 }
 ###############################################################
+###       WEB-ALB
+#################################################################
+resource "aws_security_group_rule" "web_alb_public" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"] # source is where you are getting traffic from
+  security_group_id = module.web_alb.sg_id
+}
+resource "aws_security_group_rule" "web_alb_https" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"] # source is where you are getting traffic from
+  security_group_id = module.web_alb.sg_id
+}
+###############################################################
 ###       FRONTEND
 #################################################################
 resource "aws_security_group_rule" "frontend_public" {
   type              = "ingress"
-  from_port         = 80
-  to_port           = 80
+  from_port         = 22
+  to_port           = 22
   protocol          = "tcp"
   cidr_blocks =  ["0.0.0.0/0"]#where you are getting traffic from
   security_group_id = module.frontend.sg_id
@@ -170,6 +197,22 @@ resource "aws_security_group_rule" "frontend_bastion" {
   to_port           = 22
   protocol          = "tcp"
   source_security_group_id = module.bastion.sg_id#where you are getting traffic from
+  security_group_id = module.frontend.sg_id
+}
+resource "aws_security_group_rule" "frontend_vpn" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = module.vpn.sg_id # source is where you are getting traffic from
+  security_group_id = module.frontend.sg_id
+}
+resource "aws_security_group_rule" "frontend_web_alb" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.web_alb.sg_id 
   security_group_id = module.frontend.sg_id
 }
 ###############################################################

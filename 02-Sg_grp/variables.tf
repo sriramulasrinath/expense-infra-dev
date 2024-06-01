@@ -2,7 +2,7 @@ variable "project_name" {
     default = "expense"
 }
 variable "environment" {
-    default = "Dev"
+    default = "dev"
 }
 variable "common_tags" {
   default = {

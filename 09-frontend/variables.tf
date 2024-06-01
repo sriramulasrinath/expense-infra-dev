@@ -9,7 +9,7 @@ variable "common_tags" {
     Project = "expense"
     Environment = "dev"
     Terraform = "true"
-    component = "app-alb"
+    component = "frontend"
   }
 }
 variable "zone_name" {

@@ -6,6 +6,8 @@
     - expense-dev-bastion
     - expense-dev-app_alb
     - expense-dev-vpn 
+    - expense-dev-web_alb
+#######################################################
   db:
   - name: db_backend
     desc: db accepting connections from backend
@@ -19,6 +21,7 @@
     desc: db accepting connections from vpn
     source: vpn
     port: 3306
+#######################################################
   backend:
   - name: backend_frontend
     desc: backend accepting connections from frontend
@@ -40,25 +43,25 @@
     desc: backend accepting connections from vpn_http
     source: vpn_http
     port: 8080
+#######################################################
   app_alb:
   - name: app_alb_vpn
     desc: app_alb accepting connections from vpn
     source: vpn 
     port: 80
-  app_alb:
   - name: app_alb_frontend
     desc: app_alb accepting connections from frontend
     source: frontend 
     port: 80
-  app_alb:
   - name: app_alb_bastion
     desc: app_alb accepting connections from bastion
     source: frontend 
     port: 80
+  #######################################################
   frontend:
-  - name: frontend_public
-    desc: frontend accepting connections from public
-    source: public
+  - name: frontend_web_alb
+    desc: frontend accepting connections from web_alb
+    source: web_alb
     port: 80
   - name: frontend_bastion
     desc: frontend accepting connections from bastion
@@ -68,11 +71,24 @@
     desc: frontend accepting connections from ansible
     source: ansible
     port: 22
+#######################################################
+  web_alb:
+  - name: web_alb_public
+    desc: web alb accepting connections from public
+    source: public
+    port: 80
+  web_alb:
+  - name: web_alb_public
+    desc: web alb accepting connections from public
+    source: public
+    port: 443
+#######################################################
   bastion:
   - name: bastion_public
     desc: bastion accepting connections from public
     source: public #idealy your home IP address/32
     port: 22
+#######################################################
   vpn:
   - name: vpn_public
     desc: vpn accepting connections from public
