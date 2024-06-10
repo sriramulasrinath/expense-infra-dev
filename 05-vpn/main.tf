@@ -10,7 +10,7 @@ module "vpn" {
   name = "${var.project_name}-${var.environment}-vpn"
   key_name = aws_key_pair.vpn.key_name
 
-  instance_type          = "t3.micro"
+  instance_type          = "t2.micro"
   vpc_security_group_ids = [data.aws_ssm_parameter.vpn_sg_id.value]
     # convert StringList to list and get first element
   subnet_id              = local.public_subnet_id

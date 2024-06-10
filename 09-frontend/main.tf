@@ -3,7 +3,7 @@ module "frontend" {
 
   name = "${var.project_name}-${var.environment}-${var.common_tags.component}"
 
-  instance_type          = "t3.micro"
+  instance_type          = "t2.micro"
   vpc_security_group_ids = [data.aws_ssm_parameter.frontend_sg_id.value]
     # convert StringList to list and get first element
   subnet_id              = local.public_subnet_id
@@ -102,7 +102,7 @@ resource "aws_launch_template" "frontend" {
   instance_initiated_shutdown_behavior = "terminate"
   update_default_version = true # sets the latest version to default        
 
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
 
   vpc_security_group_ids = [data.aws_ssm_parameter.frontend_sg_id.value]
 
@@ -122,7 +122,7 @@ resource "aws_launch_template" "frontend" {
 #############################################
 resource "aws_autoscaling_group" "frontend" {
   name                      = "${var.project_name}-${var.environment}-${var.common_tags.component}"
-  max_size                  = 5
+  max_size                  = 2
   min_size                  = 1
   health_check_grace_period = 60
   health_check_type         = "ELB"
