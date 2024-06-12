@@ -85,11 +85,11 @@ resource "aws_lb_target_group" "frontend" {
 
   health_check {
     path                = "/health"
-    port                = 8080
+    port                = 80
     protocol            = "HTTP"
     healthy_threshold   = 2
     unhealthy_threshold = 2
-    matcher             = "200"
+    matcher             = "200-209"
   }
 }
 ##############################################
