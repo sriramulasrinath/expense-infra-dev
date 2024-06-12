@@ -25,16 +25,16 @@ resource "null_resource" "backend" {
     instance_id = module.backend.id  # this will be triggered everytime instance is created
   }
   connection {
-        type     = "ssh"
-        user     = "ec2-user"
-        password = "DevOps321"
-        host     = module.backend.private_ip
+    type     = "ssh"
+    user     = "ec2-user"
+    password = "DevOps321"
+    host     = module.backend.private_ip
     }
 
     provisioner "file" {
     source      = "${var.common_tags.component}.sh"
     destination = "/tmp/${var.common_tags.component}.sh"
-  }
+    }
     provisioner "remote-exec" {
       inline = [ 
         "chmod +x /tmp/${var.common_tags.component}.sh",
@@ -78,7 +78,7 @@ resource "aws_ami_from_instance" "backend" {
 #############################################
 resource "aws_lb_target_group" "backend" {
   name     = "${var.project_name}-${var.environment}-${var.common_tags.component}"
-  port     = 80
+  port     = 8080
   protocol = "HTTP"
   vpc_id   = data.aws_ssm_parameter.vpc_id.value
 
@@ -171,7 +171,7 @@ resource "aws_autoscaling_group" "backend" {
       predefined_metric_type = "ASGAverageCPUUtilization"
     }
 
-    target_value = 10.0
+    target_value = 7.0
   }
 }
 ##############################################
